@@ -1,0 +1,45 @@
+cabal-version:      2.4
+name:               sve
+version:            0.1.0.0
+license:            ISC
+maintainer:         athas@sigkill.dk
+author:             Troels Henriksen
+extra-source-files: CHANGELOG.md
+
+common sve-common
+    default-language: Haskell2010
+    ghc-options:      -Wall
+
+library
+    import:         sve-common
+    exposed-modules:  SVE
+    hs-source-dirs:   src
+    build-depends:
+        base ^>=4.15.1.0,
+        deepseq,
+        containers
+
+test-suite sve-unit
+    import:         sve-common
+    type:           exitcode-stdio-1.0
+    main-is:        sve-unit.hs
+    hs-source-dirs: tests
+    build-depends:
+        base ^>=4.15.1.0,
+        sve,
+        containers,
+        QuickCheck >=2.8,
+        tasty,
+        tasty-hunit,
+        tasty-quickcheck
+
+benchmark sve-bench
+    import:         sve-common
+    type:           exitcode-stdio-1.0
+    main-is:        sve-bench.hs
+    hs-source-dirs: bench
+    build-depends:
+        base ^>=4.15.1.0,
+        containers,
+        sve,
+        criterion
