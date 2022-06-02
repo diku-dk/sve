@@ -17,11 +17,14 @@ module SVE
   )
 where
 
+import Control.Applicative
 import Control.DeepSeq
+import Data.Foldable hiding (and, or)
 import Data.List (sortBy)
 import qualified Data.List.NonEmpty as NE
 import qualified Data.Map as M
 import Data.Maybe
+import Data.Traversable
 import GHC.Generics (Generic, Generic1)
 import Prelude hiding (and, or)
 
@@ -50,6 +53,19 @@ data Formula v
   | Op Op (Formula v) (Formula v)
   deriving (Eq, Ord, Show, Generic, Generic1)
 
+instance Functor Formula where
+  fmap = fmapDefault
+
+instance Foldable Formula where
+  foldMap = foldMapDefault
+
+instance Traversable Formula where
+  traverse _ T = pure T
+  traverse _ F = pure F
+  traverse f (Var v) = Var <$> f v
+  traverse f (Not x) = Not <$> traverse f x
+  traverse f (Op o x y) = Op o <$> traverse f x <*> traverse f y
+
 instance NFData a => NFData (Formula a)
 
 instance NFData1 Formula
@@ -60,13 +76,7 @@ and = Op And
 
 -- | The free variables of a formula.  Free of duplicates.
 fvs :: Ord v => Formula v -> [v]
-fvs = nubOrd . fvs'
-  where
-    fvs' T = []
-    fvs' F = []
-    fvs' (Var v) = [v]
-    fvs' (Op _ x y) = fvs x ++ fvs y
-    fvs' (Not f) = fvs f
+fvs = nubOrd . toList
 
 -- | A substitution is a mapping from a variable to a formula.
 type Subst v = M.Map v (Formula v)

@@ -4,7 +4,7 @@ import Criterion.Main
 import SVE
 import Prelude hiding (and, or)
 
-or, and, xor :: Formula v -> Formula v -> Formula v
+and, xor :: Formula v -> Formula v -> Formula v
 and = Op And
 xor = Op Xor
 
