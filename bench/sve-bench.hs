@@ -5,7 +5,6 @@ import SVE
 import Prelude hiding (and, or)
 
 or, and, xor :: Formula v -> Formula v -> Formula v
-or = Op Or
 and = Op And
 xor = Op Xor
 
@@ -17,10 +16,8 @@ main =
   defaultMain
     [ bgroup
         "sve"
-        [ bench "formula" $ nf sve formula
-        ],
-      bgroup
-        "sve2"
-        [ bench "formula" $ nf sve2 formula
+        [ bench "formula" $ nf sve' formula
         ]
     ]
+  where
+    sve' f = sve f (fvs f)
